@@ -2,10 +2,19 @@ package com.example.demo.sample.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.sample.dao.SampleDAO;
+import com.example.demo.sample.util.CacheTest;
 import com.example.demo.sample.vo.Sample;
+import com.example.demo.sample.vo.UserVO;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -13,8 +22,15 @@ import reactor.core.publisher.Mono;
 @Service
 public class SampleServiceImpl implements SampleService {
 
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	
 	private List<Sample> repository;
 	
+	@Autowired
+	private SampleDAO sampleDao;
+	
+	@Autowired
+	private CacheTest ct;
 	
 	public SampleServiceImpl() {
 		repository = new ArrayList<Sample>();
@@ -49,12 +65,32 @@ public class SampleServiceImpl implements SampleService {
 		return null;
 	}
 
+	@Async
 	@Override
-	public Flux<Sample> findAll() {
-		Flux<Sample> sampleFlux = Flux.fromIterable(this.repository);
-		return sampleFlux;
+	public CompletableFuture<List<UserVO>> findAll() {
+		//Flux<Sample> sampleFlux = Flux.fromIterable(this.repository);
+		//return sampleFlux;
+		
+		List<UserVO> userList = sampleDao.selectTest();
+		
+		//Flux<UserVO> sampleFlux = Flux.fromIterable(userList);
+		
+		//return sampleFlux;
+		return CompletableFuture.completedFuture(userList);
 	}
 
+	
+	
+	@Override	
+	public Flux<UserVO> findAllSync() {
+		List<UserVO> userList = ct.test("id");
+		
+		Flux<UserVO> sampleFlux = Flux.fromIterable(userList);
+		
+		return sampleFlux;
+		
+	}
+	
 	@Override
 	public void create(Sample e) {
 		// TODO Auto-generated method stub
@@ -72,5 +108,8 @@ public class SampleServiceImpl implements SampleService {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+
+	
 
 }

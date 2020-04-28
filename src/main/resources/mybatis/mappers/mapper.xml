@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.sample.dao.SampleDAO">
+	<select id="selectTest" resultType="com.example.demo.sample.vo.UserVO"> 
+		SELECT USER_ID userId, USER_NAME userName FROM CHMM_USER_INFO WHERE USER_ID='admin'
+	</select>
+</mapper>
